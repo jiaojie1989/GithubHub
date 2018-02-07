@@ -55,7 +55,8 @@ function push() {
     info "Encrypt $REPO from $LEAF_DIR to $ROOT_DIR"
     cd "$LEAF_DIR"
     tar czf "$TMP" "$REPO"
-    openssl smime -encrypt -aes256 -binary -outform DEM -in "$TMP" -out "$ROOTREPO" "$BASE/$GITPUBLIC"
+#    openssl smime -encrypt -aes256 -binary -outform DEM -in "$TMP" -out "$ROOTREPO" "$BASE/$GITPUBLIC"
+    openssl enc -des-cbc -in "$TMP" -out "$ROOTREPO" -pass stdin -e
     rm -f "$LEAFTMP"
     cd "$ROOT_DIR"
     info "Add to Github"
@@ -77,7 +78,8 @@ function pull() {
     cd /
     info "Decrypting $ROOTREPO to $REPO"
     info "$TMP"
-    openssl smime -decrypt -binary -inform DEM -inkey "$BASE/$GITPRIVATE" -in "$ROOTREPO" -out "$LEAFTMP"
+#    openssl smime -decrypt -binary -inform DEM -inkey "$BASE/$GITPRIVATE" -in "$ROOTREPO" -out "$LEAFTMP"
+    openssl enc -des-cbc -in "$ROOTREPO" -out "$LEAFTMP" -pass stdin -d
     rm -rf "$LEAFREPO"
     cd "$LEAF_DIR"
     tar xzf "$LEAFTMP"
