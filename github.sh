@@ -1,25 +1,29 @@
 #!/bin/bash
 
 function usage() {
-echo "USAGE: "
-echo "$CMD init"
-echo "$CMD push|pull repo_name"
-echo ""
-echo "$CMD init: Create git.private.pem and git.public.pem under ~/keys. Then create leaf directory under this direcotry and git-clone root from Github."
-echo "NOTE: A Github repo called root should be created on github.com beforehand."
-echo ""
-echo "$CMD push repo_name: Make directory repo_name under leaf/ to an compressed archived file into root/ with the same name."
-echo "Then add this archived file to git and push it to remote."
-echo ""
-echo "$CMD pull repo_name: Pull the update files from github to root. Decompress file repo_name under root/ to leaf/."
+    echo "USAGE: "
+    echo "$CMD init"
+    echo "$CMD push|pull repo_name"
+    echo ""
+    echo "$CMD init: Create git.private.pem and git.public.pem under ~/keys. Then create leaf directory under this direcotry and git-clone root from Github."
+    echo "NOTE: A Github repo called root should be created on github.com beforehand."
+    echo ""
+    echo "$CMD push repo_name: Make directory repo_name under leaf/ to an compressed archived file into root/ with the same name."
+    echo "Then add this archived file to git and push it to remote."
+    echo ""
+    echo "$CMD pull repo_name: Pull the update files from github to root. Decompress file repo_name under root/ to leaf/."
 }
 
 function info() {
-echo "[INFO]$@"
+    echo -e "\033[32m[INFO ]\033[0m $@"
 }
 
 function error() {
-echo "[ERROR]$@"
+    echo -e  "\033[31m[ERROR]\033[0m $@"
+}
+
+function warning() {
+    echo -e  "\033[33m[WARN ]\033[0m $@"
 }
 
 function init() {
@@ -55,6 +59,7 @@ function push() {
     info "Encrypt $REPO from $LEAF_DIR to $ROOT_DIR"
     cd "$LEAF_DIR"
     tar czf "$TMP" "$REPO"
+    warning "Input Password"
 #    openssl smime -encrypt -aes256 -binary -outform DEM -in "$TMP" -out "$ROOTREPO" "$BASE/$GITPUBLIC"
     openssl enc -des-cbc -in "$TMP" -out "$ROOTREPO" -pass stdin -e
     rm -f "$LEAFTMP"
@@ -79,6 +84,7 @@ function pull() {
     info "Decrypting $ROOTREPO to $REPO"
     info "$TMP"
 #    openssl smime -decrypt -binary -inform DEM -inkey "$BASE/$GITPRIVATE" -in "$ROOTREPO" -out "$LEAFTMP"
+    warning "Input Password"
     openssl enc -des-cbc -in "$ROOTREPO" -out "$LEAFTMP" -pass stdin -d
     rm -rf "$LEAFREPO"
     cd "$LEAF_DIR"
