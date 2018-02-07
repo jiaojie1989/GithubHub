@@ -49,12 +49,13 @@ function push() {
     fi
 
     cd /
-    info "Push $aLEAFREPO to Github"
+    info "Push $REPO to Github"
     info "Remove $REPO under $ROOT_DIR/"
     rm -f "$ROOTREPO"
     info "Encrypt $REPO from $LEAF_DIR to $ROOT_DIR"
-    tar czf "$LEAFTMP" "$LEAFREPO"
-    openssl smime -encrypt -aes256 -binary -outform DEM -in "$LEAFTMP" -out "$ROOTREPO" "$BASE/$GITPUBLIC"
+    cd "$LEAF_DIR"
+    tar czf "$TMP" "$REPO"
+    openssl smime -encrypt -aes256 -binary -outform DEM -in "$TMP" -out "$ROOTREPO" "$BASE/$GITPUBLIC"
     rm -f "$LEAFTMP"
     cd "$ROOT_DIR"
     info "Add to Github"
@@ -78,6 +79,7 @@ function pull() {
     info "$TMP"
     openssl smime -decrypt -binary -inform DEM -inkey "$BASE/$GITPRIVATE" -in "$ROOTREPO" -out "$LEAFTMP"
     rm -rf "$LEAFREPO"
+    cd "$LEAF_DIR"
     tar xzf "$LEAFTMP"
     rm -r "$LEAFTMP"
     info "Finish pull $REPO"
