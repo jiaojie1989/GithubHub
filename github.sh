@@ -66,7 +66,7 @@ function push() {
     cd "$ROOT_DIR"
     info "Add to Github"
     git add "$REPO"
-    git commit -m"Push $REPO"
+    git commit -m"Push $REPO , from `hostname` @ `date`"
     git push -u origin master
     info "Finish push $REPO"
 }    
